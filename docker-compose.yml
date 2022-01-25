@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  cache-house:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8008:8080"
+    volumes:
+      - ./go.mod:/src/go.mod
+      - ./go.sum:/src/go.sum
+      - ./cmd:/src/cmd
+      - ./internal:/src/internal
+      - ./.env.example:/src/.env.example
