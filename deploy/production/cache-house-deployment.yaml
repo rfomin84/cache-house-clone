@@ -3,22 +3,17 @@ kind: Deployment
 metadata:
   name: cache-house
 spec:
+  replicas: 1
   selector:
     matchLabels:
       repository: cache-house
   template:
-    replicas: 1 # Only one replica
     metadata:
       labels:
         repository: cache-house
     spec:
       containers:
-        - name: cache-house
-          image: gcr.io/clickadilla/cache-house:v0.1
-          envFrom:
-            - configMapRef:
-                name: cache-house
-            - secretRef:
-                name: cache-house
+      - name: cache-house
+        image: gcr.io/clickadilla/cache-house:v0.1
       nodeSelector:
         cloud.google.com/gke-nodepool: pool-workers

@@ -15,7 +15,7 @@ global_job_config:
       - gcloud auth configure-docker -q
 
       - checkout
-      - cp $HOME/.env ./
+      - cp .env.production .env
 
 blocks:
   - name: Build development image
@@ -34,6 +34,7 @@ blocks:
         - name: go test
           commands:
             - docker pull $DEVELOPMENT_IMAGE
+            - docker network create tc-advertising3_default
             - docker tag $DEVELOPMENT_IMAGE ${SEMAPHORE_PROJECT_NAME}:latest
             - docker-compose run --rm cache-house go test -v ./internal/managers
 
@@ -44,6 +45,7 @@ blocks:
         - name: go fmt
           commands:
             - docker pull $DEVELOPMENT_IMAGE
+            - docker network create tc-advertising3_default
             - docker tag $DEVELOPMENT_IMAGE ${SEMAPHORE_PROJECT_NAME}:latest
             - docker-compose run --rm cache-house bash -c "diff -u <(echo -n) <(gofmt -d ./internal  ./cmd)"
 
