@@ -10,20 +10,18 @@ type ClickadillaClientInterface interface {
 }
 
 type ClickadillaClient struct {
-	Client   *fasthttp.Client
-	Host     string
-	ApiToken string
+	Client *fasthttp.Client
+	Host   string
 }
 
 type feedsResponse struct {
 	Feeds []Feed `json:"data"`
 }
 
-func NewClickadillaClient(host string, apiToken string) *ClickadillaClient {
+func NewClickadillaClient(host string) *ClickadillaClient {
 	return &ClickadillaClient{
-		Client:   &fasthttp.Client{},
-		Host:     host,
-		ApiToken: apiToken,
+		Client: &fasthttp.Client{},
+		Host:   host,
 	}
 }
 
@@ -32,7 +30,6 @@ func (c *ClickadillaClient) makeRequest(method string, url string, v interface{}
 	request.SetRequestURI(c.Host + url)
 
 	request.Header.SetMethod(method)
-	request.Header.Add("Authorization", "Bearer "+c.ApiToken)
 
 	var response = fasthttp.AcquireResponse()
 	err := c.Client.Do(request, response)

@@ -32,10 +32,7 @@ func (a *App) boot() {
 		a.logger.Fatal("Error loading .env file")
 	}
 
-	clickadillaClient := managers.NewClickadillaClient(
-		os.Getenv("CLICKADILLA_API_ENDPOINT"),
-		os.Getenv("CLICKADILLA_API_TOKEN"),
-	)
+	clickadillaClient := managers.NewClickadillaClient(os.Getenv("CLICKADILLA_API_ENDPOINT"))
 	feedState := managers.NewFeedState(clickadillaClient, a.logger)
 	go feedState.RunUpdate()
 
