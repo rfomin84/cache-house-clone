@@ -25,7 +25,10 @@ func (c *FeedsController) Index(ctx *fasthttp.RequestCtx) {
 	}
 
 	feeds := c.FeedState.GetFeeds(billingTypes, isDsp)
-	jsonResponse, err := json.Marshal(feeds)
+	feedResponse := managers.FeedsResponse{
+		Feeds: feeds,
+	}
+	jsonResponse, err := json.Marshal(feedResponse)
 
 	if err != nil {
 		c.FeedState.Logger.Error(err.Error())

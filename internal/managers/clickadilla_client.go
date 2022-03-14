@@ -14,7 +14,7 @@ type ClickadillaClient struct {
 	Host   string
 }
 
-type feedsResponse struct {
+type FeedsResponse struct {
 	Feeds []Feed `json:"data"`
 }
 
@@ -42,7 +42,7 @@ func (c *ClickadillaClient) makeRequest(method string, url string, v interface{}
 }
 
 func (c *ClickadillaClient) GetFeeds() ([]Feed, error) {
-	response := &feedsResponse{}
+	response := &FeedsResponse{}
 
 	err := c.makeRequest("GET", "api/billing/v1/feeds", response)
 
