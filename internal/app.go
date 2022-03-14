@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"github.com/clickadilla/cache-house/internal/controllers"
 	"github.com/clickadilla/cache-house/internal/controllers/api/public"
 	"github.com/clickadilla/cache-house/internal/managers"
 	"github.com/fasthttp/router"
@@ -12,6 +13,7 @@ import (
 
 type App struct {
 	router          *router.Router
+	homeController  *controllers.HomeController
 	feedsController *public.FeedsController
 	logger          *logrus.Logger
 }
@@ -43,5 +45,6 @@ func (a *App) boot() {
 }
 
 func (a *App) bootRouting() {
+	a.router.GET("/", a.homeController.Index)
 	a.router.GET("/api/feeds", a.feedsController.Index)
 }
