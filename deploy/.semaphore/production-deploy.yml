@@ -1,0 +1,23 @@
+version: v1.0
+name: Deploy to production
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+blocks:
+  - name: Deploy
+    task:
+      secrets:
+        - name: clickadilla-gcloud-service-account
+      jobs:
+        - name: kubectl
+          commands:
+            - export CLUSTER=production
+            - export IMAGE_TAG="$SEMAPHORE_GIT_BRANCH-$SEMAPHORE_GIT_SHA-development"
+            - gcloud config set project $PROJECT_ID
+            - gcloud config set compute/zone us-central1-a
+            - gcloud auth activate-service-account --key-file clickadilla-gcloud-service-account.json --project $PROJECT_ID
+            - gcloud container clusters get-credentials production
+            - checkout
+            - 'sed -r "s|(image: gcr.io/$PROJECT_ID/$SEMAPHORE_PROJECT_NAME):.*|\1:$IMAGE_TAG|" -i deploy/production/*.yaml'
+            - kubectl apply -f deploy/production/

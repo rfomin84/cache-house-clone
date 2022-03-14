@@ -1,0 +1,52 @@
+version: v1.0
+name: Pipeline
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+global_job_config:
+  secrets:
+    - name: clickadilla-gcloud-service-account
+  prologue:
+    commands:
+      - export DEVELOPMENT_IMAGE="gcr.io/clickadilla/$SEMAPHORE_PROJECT_NAME:$SEMAPHORE_GIT_BRANCH-$SEMAPHORE_GIT_SHA-development"
+
+      - gcloud auth activate-service-account --key-file=$HOME/clickadilla-gcloud-service-account.json
+      - gcloud auth configure-docker -q
+
+      - checkout
+      - cp $HOME/.env ./
+
+blocks:
+  - name: Build development image
+    dependencies: []
+    task:
+      jobs:
+        - name: docker build
+          commands:
+            - docker build --tag $DEVELOPMENT_IMAGE .
+            - docker push $DEVELOPMENT_IMAGE
+
+  - name: Run tests
+    dependencies: ["Build development image"]
+    task:
+      jobs:
+        - name: go test
+          commands:
+            - docker pull $DEVELOPMENT_IMAGE
+            - docker tag $DEVELOPMENT_IMAGE ${SEMAPHORE_PROJECT_NAME}:latest
+            - docker-compose run --rm cache-house go test -v ./internal/managers
+
+  - name: Check codestyle
+    dependencies: ["Build development image"]
+    task:
+      jobs:
+        - name: go fmt
+          commands:
+            - docker pull $DEVELOPMENT_IMAGE
+            - docker tag $DEVELOPMENT_IMAGE ${SEMAPHORE_PROJECT_NAME}:latest
+            - docker-compose run --rm cache-house bash -c "diff -u <(echo -n) <(gofmt -d ./internal  ./cmd)"
+
+promotions:
+  - name: Deploy to production
+    pipeline_file: production-deploy.yml
