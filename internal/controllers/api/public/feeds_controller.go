@@ -19,12 +19,19 @@ func (c *FeedsController) Index(ctx *fasthttp.RequestCtx) {
 
 	billingTypes := queryParams["billing_types"]
 
-	isDsp := false
+	var feedType managers.FeedType
 	if len(queryParams["is_dsp"]) > 0 {
-		isDsp, _ = strconv.ParseBool(queryParams["is_dsp"][0])
+		value, err := strconv.Atoi(queryParams["is_dsp"][0])
+		if err != nil {
+			c.FeedState.Logger.Error(err.Error())
+			ctx.Error("Error", fasthttp.StatusInternalServerError)
+		}
+		feedType = managers.FeedType(value)
+	} else {
+		feedType = managers.All
 	}
 
-	feeds := c.FeedState.GetFeeds(billingTypes, isDsp)
+	feeds := c.FeedState.GetFeeds(billingTypes, feedType)
 	feedResponse := managers.FeedsResponse{
 		Feeds: feeds,
 	}

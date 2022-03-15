@@ -13,6 +13,14 @@ type FeedState struct {
 	Logger            *logrus.Logger
 }
 
+type FeedType int
+
+const (
+	Reseller FeedType = iota
+	Dsp
+	All
+)
+
 func NewFeedState(clientClient ClickadillaClientInterface, logger *logrus.Logger) *FeedState {
 	return &FeedState{
 		ClickadillaClient: clientClient,
@@ -20,13 +28,26 @@ func NewFeedState(clientClient ClickadillaClientInterface, logger *logrus.Logger
 	}
 }
 
-func (fs *FeedState) GetFeeds(billingTypes []string, isDsp bool) []Feed {
+func (fs *FeedState) GetFeeds(billingTypes []string, feedType FeedType) []Feed {
 	feeds := make([]Feed, 0, 500)
 
 	for _, feed := range fs.Feeds {
-		if feed.IsDsp != isDsp {
+		var currentFeedType FeedType
+		if feed.IsDsp {
+			currentFeedType = Dsp
+		} else {
+			currentFeedType = Reseller
+		}
+
+		if feedType != All && currentFeedType != feedType {
 			continue
 		}
+
+		if len(billingTypes) == 0 {
+			feeds = append(feeds, feed)
+			continue
+		}
+
 		for _, billingType := range billingTypes {
 			for _, feedBillingType := range feed.Formats {
 				if billingType == feedBillingType {
