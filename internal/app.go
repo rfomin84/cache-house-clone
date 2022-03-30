@@ -42,6 +42,9 @@ func (a *App) boot() {
 	a.feedsController = &public.FeedsController{
 		FeedState: feedState,
 	}
+	a.homeController = &controllers.HomeController{
+		FeedState: feedState,
+	}
 }
 
 func (a *App) bootRouting() {
