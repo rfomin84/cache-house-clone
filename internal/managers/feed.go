@@ -23,7 +23,7 @@ type Feed struct {
 	ClickTtlHours      int                  `json:"click_ttl_hours"`
 	SfFrom             int                  `json:"sf_from"`
 	SfTo               int                  `json:"sf_to"`
-	Ipv6               bool                 `json:"ipv_6"`
+	Ipv6               bool                 `json:"ipv6"`
 	OsTypes            string               `json:"os_types"`
 	CurrencyCoeff      float64              `json:"currency_coeff"`
 	Sources            string               `json:"sources"`
