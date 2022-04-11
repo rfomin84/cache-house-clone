@@ -29,7 +29,7 @@ type Feed struct {
 	OsTypes            string               `json:"os_types"`
 	CurrencyCoeff      float64              `json:"currency_coeff"`
 	Sources            string               `json:"sources"`
-	GeoSiteId          []string             `json:"geo_site_id"`
+	GeoSiteId          []GeoSiteId          `json:"geo_siteid"`
 	UniquenessSettings []UniquenessSettings `json:"uniqueness_settings"`
 }
 
@@ -39,4 +39,10 @@ type UniquenessSettings struct {
 	TimeSettings   int    `json:"time_settings"`
 	UniqueType     string `json:"unique_type"`
 	UniqueCoverage string `json:"unique_coverage"`
+}
+
+type GeoSiteId struct {
+	Accept  bool     `json:"accept"`
+	Spot    string   `json:"spot"`
+	Country []string `json:"country"`
 }
