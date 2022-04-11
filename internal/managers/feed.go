@@ -18,6 +18,8 @@ type Feed struct {
 	Capping            int                  `json:"capping"`
 	IpMismatch         bool                 `json:"ip_mismatch"`
 	GeoMismatch        bool                 `json:"geo_mismatch"`
+	UaMismatchFilter   bool                 `json:"ua_mismatch_filter"`
+	IspMismatchFilter  bool                 `json:"isp_mismatch_filter"`
 	TzMismatchFilter   bool                 `json:"tz_mismatch_filter"`
 	CtrCapping         int                  `json:"ctr_capping"`
 	ClickTtlHours      int                  `json:"click_ttl_hours"`
