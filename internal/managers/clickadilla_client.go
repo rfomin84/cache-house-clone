@@ -2,7 +2,9 @@ package managers
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/valyala/fasthttp"
+	"net/http"
 )
 
 type ClickadillaClientInterface interface {
@@ -37,6 +39,9 @@ func (c *ClickadillaClient) makeRequest(method string, url string, v interface{}
 		return err
 	}
 	fasthttp.ReleaseRequest(request)
+	if statusCode := response.StatusCode(); statusCode != http.StatusOK {
+		return fmt.Errorf("storage update error. Response status code client: %d", statusCode)
+	}
 	defer fasthttp.ReleaseResponse(response)
 	return json.Unmarshal(response.Body(), &v)
 }
