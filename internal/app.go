@@ -4,6 +4,7 @@ import (
 	"github.com/clickadilla/cache-house/internal/controllers"
 	"github.com/clickadilla/cache-house/internal/controllers/api/public"
 	"github.com/clickadilla/cache-house/internal/managers"
+	"github.com/clickadilla/cache-house/internal/middleware"
 	"github.com/fasthttp/router"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
@@ -49,5 +50,5 @@ func (a *App) boot() {
 
 func (a *App) bootRouting() {
 	a.router.GET("/", a.homeController.Index)
-	a.router.GET("/api/feeds", a.feedsController.Index)
+	a.router.GET("/api/feeds", middleware.AuthMiddleware(a.feedsController.Index))
 }

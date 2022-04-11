@@ -15,5 +15,8 @@ spec:
       containers:
       - name: cache-house
         image: gcr.io/clickadilla/cache-house:v0.1
+        envFrom:
+          - secretRef:
+              name: cache-house
       nodeSelector:
         cloud.google.com/gke-nodepool: worker-pool
