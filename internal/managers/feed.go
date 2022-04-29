@@ -9,6 +9,7 @@ type Feed struct {
 	Throttle           int                  `json:"throttle"`
 	AccurateThrottle   int                  `json:"accurate_throttle"`
 	AccountId          int                  `json:"account_id"`
+	AccountName        string               `json:"account_name"`
 	Labels             string               `json:"labels"`
 	Discrepancy        float64              `json:"discrepancy"`
 	AntiAdblock        bool                 `json:"anti_adblock"`
