@@ -11,6 +11,7 @@ type Feed struct {
 	AccountId          int                  `json:"account_id"`
 	AccountName        string               `json:"account_name"`
 	Labels             string               `json:"labels"`
+	LabelsIds          string               `json:"labels_ids"`
 	Discrepancy        float64              `json:"discrepancy"`
 	AntiAdblock        bool                 `json:"anti_adblock"`
 	AutoThrottle       bool                 `json:"auto_throttle"`
@@ -26,6 +27,8 @@ type Feed struct {
 	ClickTtlHours      int                  `json:"click_ttl_hours"`
 	SfFrom             int                  `json:"sf_from"`
 	SfTo               int                  `json:"sf_to"`
+	MinScore           int                  `json:"min_score"`
+    MaxScore           int                  `json:"max_score"`
 	Ipv6               bool                 `json:"ipv6"`
 	OsTypes            string               `json:"os_types"`
 	CurrencyCoeff      float64              `json:"currency_coeff"`
