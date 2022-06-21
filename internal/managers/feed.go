@@ -28,7 +28,7 @@ type Feed struct {
 	SfFrom             int                  `json:"sf_from"`
 	SfTo               int                  `json:"sf_to"`
 	MinScore           int                  `json:"min_score"`
-        MaxScore           int                  `json:"max_score"`
+	MaxScore           int                  `json:"max_score"`
 	Ipv6               bool                 `json:"ipv6"`
 	OsTypes            string               `json:"os_types"`
 	CurrencyCoeff      float64              `json:"currency_coeff"`
