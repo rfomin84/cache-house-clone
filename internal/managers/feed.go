@@ -33,8 +33,8 @@ type Feed struct {
 	Ipv6                 bool                 `json:"ipv6"`
 	OsTypes              string               `json:"os_types"`
 	CurrencyCoeff        float64              `json:"currency_coeff"`
-	SiteNames            string               `json:"site_names"`
-	SspNames             string               `json:"ssp_names"`
+	Sources              string               `json:"sources"`
+	SspIds               string               `json:"ssp_ids"`
 	GeoSiteId            []GeoSiteId          `json:"geo_siteid"`
 	UniquenessSettings   []UniquenessSettings `json:"uniqueness_settings"`
 }
