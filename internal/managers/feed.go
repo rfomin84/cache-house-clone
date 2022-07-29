@@ -37,6 +37,7 @@ type Feed struct {
 	SspIds               string               `json:"ssp_ids"`
 	GeoSiteId            []GeoSiteId          `json:"geo_siteid"`
 	UniquenessSettings   []UniquenessSettings `json:"uniqueness_settings"`
+	RtbCategoryIds       string               `json:"rtb_category_ids"`
 }
 
 type UniquenessSettings struct {
