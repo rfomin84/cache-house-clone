@@ -38,7 +38,7 @@ type Feed struct {
 	GeoSiteId            []GeoSiteId          `json:"geo_siteid"`
 	UniquenessSettings   []UniquenessSettings `json:"uniqueness_settings"`
 	RtbCategoryIds       string               `json:"rtb_category_ids"`
-	ClickTtlMin          string               `json:"click_ttl_min"`
+	ClickTtlMin          int                  `json:"click_ttl_min"`
 }
 
 type UniquenessSettings struct {
