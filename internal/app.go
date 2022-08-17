@@ -16,6 +16,7 @@ type App struct {
 	router          *router.Router
 	homeController  *controllers.HomeController
 	feedsController *public.FeedsController
+	sspController   *public.SupplySidePlatformsController
 	logger          *logrus.Logger
 }
 
@@ -39,9 +40,15 @@ func (a *App) boot() {
 	feedState := managers.NewFeedState(clickadillaClient, a.logger)
 	go feedState.RunUpdate()
 
+	sspState := managers.NewSupplySidePlatformState(clickadillaClient, a.logger)
+	go sspState.RunUpdate()
+
 	a.router = router.New()
 	a.feedsController = &public.FeedsController{
 		FeedState: feedState,
+	}
+	a.sspController = &public.SupplySidePlatformsController{
+		SupplySidePlatformState: sspState,
 	}
 	a.homeController = &controllers.HomeController{
 		FeedState: feedState,
@@ -51,4 +58,5 @@ func (a *App) boot() {
 func (a *App) bootRouting() {
 	a.router.GET("/", a.homeController.Index)
 	a.router.GET("/api/feeds", middleware.AuthMiddleware(a.feedsController.Index))
+	a.router.GET("/api/supply-side-platforms", middleware.AuthMiddleware(a.sspController.Index))
 }

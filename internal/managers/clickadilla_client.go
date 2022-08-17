@@ -9,6 +9,7 @@ import (
 
 type ClickadillaClientInterface interface {
 	GetFeeds() ([]Feed, error)
+	GetSupplySidePlatforms() ([]SupplySidePlatform, error)
 }
 
 type ClickadillaClient struct {
@@ -18,6 +19,10 @@ type ClickadillaClient struct {
 
 type FeedsResponse struct {
 	Feeds []Feed `json:"data"`
+}
+
+type SupplySidePlatformsResponse struct {
+	SupplySidePlatforms []SupplySidePlatform `json:"data"`
 }
 
 func NewClickadillaClient(host string) *ClickadillaClient {
@@ -55,4 +60,14 @@ func (c *ClickadillaClient) GetFeeds() ([]Feed, error) {
 		return nil, err
 	}
 	return response.Feeds, err
+}
+
+func (c *ClickadillaClient) GetSupplySidePlatforms() ([]SupplySidePlatform, error) {
+	response := &SupplySidePlatformsResponse{}
+
+	err := c.makeRequest("GET", "api/billing/v1/supply-side-platforms", response)
+	if err != nil {
+		return nil, err
+	}
+	return response.SupplySidePlatforms, err
 }

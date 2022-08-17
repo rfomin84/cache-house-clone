@@ -17,6 +17,11 @@ func (c ClickadillaClientMock) GetFeeds() ([]Feed, error) {
 	return args.Get(0).([]Feed), args.Error(1)
 }
 
+func (c ClickadillaClientMock) GetSupplySidePlatforms() ([]SupplySidePlatform, error) {
+	args := c.Called()
+	return args.Get(0).([]SupplySidePlatform), args.Error(1)
+}
+
 func TestUpdate(t *testing.T) {
 	feed := Feed{
 		Id:      1,
