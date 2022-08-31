@@ -2,6 +2,8 @@ package managers
 
 type Feed struct {
 	Id                   int                  `json:"id"`
+	Name                 string               `json:"name"`
+	CreatedAt            string               `json:"created_at"`
 	Geo                  string               `json:"geo"`
 	Formats              []string             `json:"formats"`
 	IsDsp                bool                 `json:"is_dsp"`

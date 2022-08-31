@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"sync"
 	"testing"
+	"time"
 )
 
 type ClickadillaClientMock struct {
@@ -20,6 +21,16 @@ func (c ClickadillaClientMock) GetFeeds() ([]Feed, error) {
 func (c ClickadillaClientMock) GetSupplySidePlatforms() ([]SupplySidePlatform, error) {
 	args := c.Called()
 	return args.Get(0).([]SupplySidePlatform), args.Error(1)
+}
+
+func (c ClickadillaClientMock) GetNetworks() ([]Network, error) {
+	args := c.Called()
+	return args.Get(0).([]Network), args.Error(1)
+}
+
+func (c ClickadillaClientMock) GetDiscrepancies(startDate, endDate time.Time) ([]Discrepancies, error) {
+	args := c.Called()
+	return args.Get(0).([]Discrepancies), args.Error(1)
 }
 
 func TestUpdate(t *testing.T) {
