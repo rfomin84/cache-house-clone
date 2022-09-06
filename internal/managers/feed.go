@@ -39,6 +39,7 @@ type Feed struct {
 	UniquenessSettings   []UniquenessSettings `json:"uniqueness_settings"`
 	RtbCategoryIds       string               `json:"rtb_category_ids"`
 	ClickTtlMin          int                  `json:"click_ttl_min"`
+	CacheTtlMin          *int                 `json:"cache_ttl_min"`
 }
 
 type UniquenessSettings struct {
