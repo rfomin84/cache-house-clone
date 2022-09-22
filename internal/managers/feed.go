@@ -42,6 +42,8 @@ type Feed struct {
 	RtbCategoryIds       string               `json:"rtb_category_ids"`
 	ClickTtlMin          int                  `json:"click_ttl_min"`
 	CacheTtlMin          *int                 `json:"cache_ttl_min"`
+	KeywordsBlacklist    string               `json:"keywords_blacklist"`
+	KeywordsWhitelist    string               `json:"keywords_whitelist"`
 }
 
 type UniquenessSettings struct {
