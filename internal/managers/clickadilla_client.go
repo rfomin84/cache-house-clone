@@ -10,7 +10,11 @@ import (
 
 type ClickadillaClientInterface interface {
 	GetFeeds() ([]Feed, error)
+	GetFeedsTargets() ([]FeedTargers, error)
+	GetFeedsSupplySidePlatforms() ([]FeedSupplySidePlatforms, error)
 	GetSupplySidePlatforms() ([]SupplySidePlatform, error)
+	GetFeedsLabels() ([]FeedLabels, error)
+	GetFeedsRtbCategories() ([]FeedRtbCategories, error)
 	GetNetworks() ([]Network, error)
 	GetDiscrepancies(startDate, endDate time.Time) ([]Discrepancies, error)
 }
@@ -76,6 +80,58 @@ func (c *ClickadillaClient) GetFeeds() ([]Feed, error) {
 		return nil, err
 	}
 	return response.Feeds, err
+}
+
+func (c *ClickadillaClient) GetFeedsTargets() ([]FeedTargers, error) {
+	response := struct {
+		Targets []FeedTargers `json:"data"`
+	}{}
+
+	err := c.makeRequest("GET", "api/billing/v1/feeds-targets", &response)
+
+	if err != nil {
+		return nil, err
+	}
+	return response.Targets, err
+}
+
+func (c *ClickadillaClient) GetFeedsSupplySidePlatforms() ([]FeedSupplySidePlatforms, error) {
+	response := struct {
+		SupplySidePlatforms []FeedSupplySidePlatforms `json:"data"`
+	}{}
+
+	err := c.makeRequest("GET", "api/billing/v1/feeds-supply-side-platforms", &response)
+
+	if err != nil {
+		return nil, err
+	}
+	return response.SupplySidePlatforms, err
+}
+
+func (c *ClickadillaClient) GetFeedsLabels() ([]FeedLabels, error) {
+	response := struct {
+		Labels []FeedLabels `json:"data"`
+	}{}
+
+	err := c.makeRequest("GET", "api/billing/v1/feeds-labels", &response)
+
+	if err != nil {
+		return nil, err
+	}
+	return response.Labels, err
+}
+
+func (c *ClickadillaClient) GetFeedsRtbCategories() ([]FeedRtbCategories, error) {
+	response := struct {
+		RtbCategories []FeedRtbCategories `json:"data"`
+	}{}
+
+	err := c.makeRequest("GET", "api/billing/v1/feeds-rtb-categories", &response)
+
+	if err != nil {
+		return nil, err
+	}
+	return response.RtbCategories, err
 }
 
 func (c *ClickadillaClient) GetSupplySidePlatforms() ([]SupplySidePlatform, error) {

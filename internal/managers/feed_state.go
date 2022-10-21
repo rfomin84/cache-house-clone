@@ -72,10 +72,84 @@ func (fs *FeedState) Update() {
 	fs.Logger.Info("FeedState: feeds update started")
 
 	newFeeds, err := fs.ClickadillaClient.GetFeeds()
-
 	if err != nil {
 		fs.Logger.Error(err.Error())
 		return
+	}
+
+	var wg sync.WaitGroup
+	newFeedsTargetsMap := make(map[int]FeedTargers)
+	newFeedsSupplySidePlatformsMap := make(map[int]FeedSupplySidePlatforms)
+	newFeedsLabelsMap := make(map[int]FeedLabels)
+	newFeedsRtbCategoriesMap := make(map[int]FeedRtbCategories)
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		newFeedsTargets, err := fs.ClickadillaClient.GetFeedsTargets()
+		if err != nil {
+			fs.Logger.Error(err.Error())
+			return
+		}
+		for _, feedTarget := range newFeedsTargets {
+			newFeedsTargetsMap[feedTarget.Id] = feedTarget
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+		wg.Done()
+
+		newFeedsSupplySidePlatforms, err := fs.ClickadillaClient.GetFeedsSupplySidePlatforms()
+		if err != nil {
+			fs.Logger.Error(err.Error())
+			return
+		}
+		for _, feedSupplySidePlatform := range newFeedsSupplySidePlatforms {
+			newFeedsSupplySidePlatformsMap[feedSupplySidePlatform.Id] = feedSupplySidePlatform
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		newFeedsLabels, err := fs.ClickadillaClient.GetFeedsLabels()
+		if err != nil {
+			fs.Logger.Error(err.Error())
+			return
+		}
+		for _, feedLabel := range newFeedsLabels {
+			newFeedsLabelsMap[feedLabel.Id] = feedLabel
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		newFeedsRtbCategories, err := fs.ClickadillaClient.GetFeedsRtbCategories()
+		if err != nil {
+			fs.Logger.Error(err.Error())
+			return
+		}
+		for _, feedRtbCategories := range newFeedsRtbCategories {
+			newFeedsRtbCategoriesMap[feedRtbCategories.Id] = feedRtbCategories
+		}
+	}()
+
+	wg.Wait()
+	for i, feed := range newFeeds {
+		newFeeds[i].Geo = newFeedsTargetsMap[feed.Id].Geo
+		newFeeds[i].Formats = newFeedsTargetsMap[feed.Id].Formats
+		newFeeds[i].Sources = newFeedsTargetsMap[feed.Id].Sources
+		newFeeds[i].OsTypes = newFeedsTargetsMap[feed.Id].OsTypes
+		newFeeds[i].SspBlacklistIncluded = newFeedsSupplySidePlatformsMap[feed.Id].SspBlacklistIncluded
+		newFeeds[i].SspIds = newFeedsSupplySidePlatformsMap[feed.Id].SspIds
+		newFeeds[i].Labels = newFeedsLabelsMap[feed.Id].Labels
+		newFeeds[i].LabelsIds = newFeedsLabelsMap[feed.Id].LabelsIds
+		newFeeds[i].RtbCategoryIds = newFeedsRtbCategoriesMap[feed.Id].RtbCategoryIds
 	}
 
 	fs.Mutex.Lock()

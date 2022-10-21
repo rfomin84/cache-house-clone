@@ -44,6 +44,32 @@ type Feed struct {
 	CacheTtlMin          *int                 `json:"cache_ttl_min"`
 	KeywordsBlacklist    string               `json:"keywords_blacklist"`
 	KeywordsWhitelist    string               `json:"keywords_whitelist"`
+	TrackOnlyViewed      bool                 `json:"track_only_viewed"`
+}
+
+type FeedTargers struct {
+	Id      int      `json:"id"`
+	Geo     string   `json:"geo"`
+	Formats []string `json:"formats"`
+	OsTypes string   `json:"os_types"`
+	Sources string   `json:"sources"`
+}
+
+type FeedSupplySidePlatforms struct {
+	Id                   int    `json:"id"`
+	SspIds               string `json:"ssp_ids"`
+	SspBlacklistIncluded bool   `json:"ssp_blacklist_included"`
+}
+
+type FeedLabels struct {
+	Id        int    `json:"id"`
+	Labels    string `json:"labels"`
+	LabelsIds string `json:"labels_ids"`
+}
+
+type FeedRtbCategories struct {
+	Id             int    `json:"id"`
+	RtbCategoryIds string `json:"rtb_category_ids"`
 }
 
 type UniquenessSettings struct {
