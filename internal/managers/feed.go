@@ -46,14 +46,16 @@ type Feed struct {
 	KeywordsWhitelist    string               `json:"keywords_whitelist"`
 	TrackOnlyViewed      bool                 `json:"track_only_viewed"`
 	GoogleBotsFilter     bool                 `json:"google_bots_filter"`
+	Browsers             []Browsers           `json:"browsers"`
 }
 
 type FeedTargers struct {
-	Id      int      `json:"id"`
-	Geo     string   `json:"geo"`
-	Formats []string `json:"formats"`
-	OsTypes string   `json:"os_types"`
-	Sources string   `json:"sources"`
+	Id       int        `json:"id"`
+	Geo      string     `json:"geo"`
+	Formats  []string   `json:"formats"`
+	OsTypes  string     `json:"os_types"`
+	Sources  string     `json:"sources"`
+	Browsers []Browsers `json:"browsers"`
 }
 
 type FeedSupplySidePlatforms struct {
@@ -85,4 +87,9 @@ type GeoSiteId struct {
 	Accept  bool     `json:"accept"`
 	Spot    string   `json:"spot"`
 	Country []string `json:"country"`
+}
+
+type Browsers struct {
+	Browser        string `json:"browser"`
+	BrowserVersion int    `json:"browser_version"`
 }
