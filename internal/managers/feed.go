@@ -45,6 +45,7 @@ type Feed struct {
 	KeywordsBlacklist    string               `json:"keywords_blacklist"`
 	KeywordsWhitelist    string               `json:"keywords_whitelist"`
 	TrackOnlyViewed      bool                 `json:"track_only_viewed"`
+	GoogleBotsFilter     bool                 `json:"google_bots_filter"`
 }
 
 type FeedTargers struct {
