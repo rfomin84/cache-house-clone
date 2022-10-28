@@ -9,6 +9,7 @@ type SupplySidePlatform struct {
 	UUID              string     `json:"uuid"`
 	Name              string     `json:"name"`
 	AccountName       string     `json:"account_name"`
+	NetworkName       string     `json:"network_name"`
 	Timeout           int        `json:"timeout"`
 	Throttle          int        `json:"throttle"`
 	TrafficController bool       `json:"traffic_controller"`
