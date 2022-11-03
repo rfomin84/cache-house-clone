@@ -140,6 +140,27 @@ func (fs *FeedState) Update() {
 	}()
 
 	wg.Wait()
+
+	if len(newFeeds) == 0 {
+		return
+	}
+
+	if len(newFeedsTargetsMap) == 0 {
+		return
+	}
+
+	if len(newFeedsSupplySidePlatformsMap) == 0 {
+		return
+	}
+
+	if len(newFeedsLabelsMap) == 0 {
+		return
+	}
+
+	if len(newFeedsRtbCategoriesMap) == 0 {
+		return
+	}
+
 	for i, feed := range newFeeds {
 		newFeeds[i].Geo = newFeedsTargetsMap[feed.Id].Geo
 		newFeeds[i].Formats = newFeedsTargetsMap[feed.Id].Formats
