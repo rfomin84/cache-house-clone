@@ -29,6 +29,8 @@ func NewFeedState(clientClient ClickadillaClientInterface, logger *logrus.Logger
 }
 
 func (fs *FeedState) GetFeeds(billingTypes []string, feedType FeedType) []Feed {
+	fs.Mutex.RLock()
+	defer fs.Mutex.RUnlock()
 	feeds := make([]Feed, 0, 500)
 
 	for _, feed := range fs.Feeds {
@@ -172,6 +174,7 @@ func (fs *FeedState) Update() {
 		newFeeds[i].LabelsIds = newFeedsLabelsMap[feed.Id].LabelsIds
 		newFeeds[i].RtbCategoryIds = newFeedsRtbCategoriesMap[feed.Id].RtbCategoryIds
 		newFeeds[i].Browsers = newFeedsTargetsMap[feed.Id].Browsers
+		newFeeds[i].LanguageFilter = newFeedsTargetsMap[feed.Id].LanguageFilter
 	}
 
 	fs.Mutex.Lock()

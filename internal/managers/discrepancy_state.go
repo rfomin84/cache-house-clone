@@ -1,7 +1,6 @@
 package managers
 
 import (
-	"fmt"
 	"github.com/golang-module/carbon/v2"
 	"github.com/sirupsen/logrus"
 	"log"
@@ -42,6 +41,8 @@ func (discrepancyState *DiscrepancyState) RunUpdate() {
 }
 
 func (discrepancyState *DiscrepancyState) Update() {
+	discrepancyState.Logger.Info("DiscrepancyState: Discrepancies update started")
+
 	startDate := carbon.Now().SubMonths(6)
 
 	result := make([]Discrepancies, 0)
@@ -66,11 +67,15 @@ func (discrepancyState *DiscrepancyState) Update() {
 	}
 
 	wg.Wait()
+	discrepancyState.Mutex.Lock()
 	discrepancyState.Discrepancies = result
-	fmt.Println("execute", len(discrepancyState.Discrepancies))
+	discrepancyState.Mutex.Unlock()
+	discrepancyState.Logger.Info("DiscrepancyState: Discrepancies update finished")
 }
 
 func (discrepancyState *DiscrepancyState) GetDiscrepancies(startDate, endDate time.Time, billingTypes []string, isDsp FeedType) []DiscrepResponse {
+	discrepancyState.Mutex.RLock()
+	defer discrepancyState.Mutex.RUnlock()
 
 	allFeeds := discrepancyState.FeedState.GetFeeds(billingTypes, isDsp)
 
@@ -80,15 +85,11 @@ func (discrepancyState *DiscrepancyState) GetDiscrepancies(startDate, endDate ti
 	groupByDiscreps := discrepancyState.groupByDate()
 
 	log.Println("groupByDiscreps count", len(groupByDiscreps))
-	_, ok := groupByDiscreps["2022-03-18"]
-	fmt.Println("OK1", ok)
-	_, ok = groupByDiscreps["2022-08-18"]
 
 	start := carbon.Time2Carbon(startDate)
 	end := carbon.Time2Carbon(endDate)
 
 	for day := start; day.Lte(end); day = day.AddDay() {
-		fmt.Println(day.ToDateString())
 		for _, feed := range allFeeds {
 			discrepValue := 1.0
 			finalized := false
@@ -106,7 +107,6 @@ func (discrepancyState *DiscrepancyState) GetDiscrepancies(startDate, endDate ti
 			})
 		}
 	}
-	fmt.Println("len result ", len(result))
 	return result
 }
 

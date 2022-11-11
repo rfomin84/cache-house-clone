@@ -9,6 +9,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"github.com/valyala/fasthttp"
+	"log"
 	"os"
 )
 
@@ -26,7 +27,7 @@ func (a *App) Run() {
 	a.boot()
 	a.bootRouting()
 
-	_ = fasthttp.ListenAndServe(":"+os.Getenv("APP_PORT"), a.router.Handler)
+	log.Fatal(fasthttp.ListenAndServe(":"+os.Getenv("APP_PORT"), a.router.Handler))
 }
 
 func (a *App) boot() {

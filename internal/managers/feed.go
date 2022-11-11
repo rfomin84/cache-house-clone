@@ -47,15 +47,17 @@ type Feed struct {
 	TrackOnlyViewed      bool                 `json:"track_only_viewed"`
 	GoogleBotsFilter     bool                 `json:"google_bots_filter"`
 	Browsers             []Browsers           `json:"browsers"`
+	LanguageFilter       []string             `json:"language_filter"`
 }
 
 type FeedTargers struct {
-	Id       int        `json:"id"`
-	Geo      string     `json:"geo"`
-	Formats  []string   `json:"formats"`
-	OsTypes  string     `json:"os_types"`
-	Sources  string     `json:"sources"`
-	Browsers []Browsers `json:"browsers"`
+	Id             int        `json:"id"`
+	Geo            string     `json:"geo"`
+	Formats        []string   `json:"formats"`
+	OsTypes        string     `json:"os_types"`
+	Sources        string     `json:"sources"`
+	Browsers       []Browsers `json:"browsers"`
+	LanguageFilter []string   `json:"language_filter"`
 }
 
 type FeedSupplySidePlatforms struct {

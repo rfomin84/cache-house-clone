@@ -29,6 +29,8 @@ func (sspState *SupplySidePlatformState) RunUpdate() {
 }
 
 func (sspState *SupplySidePlatformState) GetSupplySidePlatforms() []SupplySidePlatform {
+	sspState.Mutex.RLock()
+	defer sspState.Mutex.RUnlock()
 	return sspState.SupplySidePlatforms
 }
 
