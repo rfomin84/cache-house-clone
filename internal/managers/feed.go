@@ -48,6 +48,7 @@ type Feed struct {
 	GoogleBotsFilter     bool                 `json:"google_bots_filter"`
 	Browsers             []Browsers           `json:"browsers"`
 	LanguageFilter       []string             `json:"language_filter"`
+	ClickDelay           *float64             `json:"click_delay"`
 }
 
 type FeedTargers struct {
