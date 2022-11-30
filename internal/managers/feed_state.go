@@ -8,6 +8,7 @@ import (
 
 type FeedState struct {
 	Feeds             []Feed
+	FeedsNetworks     []FeedsNetworks
 	Mutex             sync.RWMutex
 	ClickadillaClient ClickadillaClientInterface
 	Logger            *logrus.Logger
@@ -62,11 +63,38 @@ func (fs *FeedState) GetFeeds(billingTypes []string, feedType FeedType) []Feed {
 	return feeds
 }
 
+func (fs *FeedState) GetFeedsNetworks() []FeedsNetworks {
+	fs.Mutex.RLock()
+	defer fs.Mutex.RUnlock()
+	return fs.FeedsNetworks
+}
+
 func (fs *FeedState) RunUpdate() {
 	for {
 		fs.Update()
 		time.Sleep(time.Minute * 2)
 	}
+}
+
+func (fs *FeedState) RunUpdateFeedsNetworks() {
+	for {
+		fs.UpdateFeedNetworks()
+		time.Sleep(time.Minute * 10)
+	}
+}
+
+func (fs *FeedState) UpdateFeedNetworks() {
+	fs.Logger.Info("FeedState: feeds-networks update started")
+	newFeedsNetworks, err := fs.ClickadillaClient.GetFeedsNetworks()
+	if err != nil {
+		fs.Logger.Error(err.Error())
+		return
+	}
+	fs.Mutex.Lock()
+	fs.FeedsNetworks = newFeedsNetworks
+	fs.Mutex.Unlock()
+
+	fs.Logger.Info("FeedState: feeds-networks update finished")
 }
 
 func (fs *FeedState) Update() {

@@ -42,6 +42,7 @@ func (a *App) boot() {
 	clickadillaClient := managers.NewClickadillaClient(os.Getenv("CLICKADILLA_API_ENDPOINT"))
 	feedState := managers.NewFeedState(clickadillaClient, a.logger)
 	go feedState.RunUpdate()
+	go feedState.RunUpdateFeedsNetworks()
 
 	sspState := managers.NewSupplySidePlatformState(clickadillaClient, a.logger)
 	go sspState.RunUpdate()

@@ -101,3 +101,11 @@ type LanguageFilter struct {
 	Accept    bool     `json:"accept"`
 	Languages []string `json:"languages"`
 }
+
+type FeedsNetworks struct {
+	Id          int    `json:"id"`
+	Name        string `json:"name"`
+	CreatedAt   string `json:"created_at"`
+	NetworkId   int    `json:"network_id"`
+	NetworkName string `json:"network_name"`
+}

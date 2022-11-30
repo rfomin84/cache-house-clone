@@ -49,7 +49,7 @@ func (c *FeedsController) Index(ctx *fasthttp.RequestCtx) {
 }
 
 func (c *FeedsController) FeedListTsv(ctx *fasthttp.RequestCtx) {
-	feeds := c.FeedState.GetFeeds(nil, managers.All)
+	feeds := c.FeedState.GetFeedsNetworks()
 
 	result := make([][]string, 0)
 	result = append(result, []string{"campaign_id", "campaign_name"})
@@ -64,17 +64,20 @@ func (c *FeedsController) FeedListTsv(ctx *fasthttp.RequestCtx) {
 	writer := csv.NewWriter(ctx.Response.BodyWriter())
 	writer.Comma = '\t'
 	_ = writer.WriteAll(result)
+
+	ctx.Response.Header.Set("Content-Type", "text/csv")
+	ctx.Response.Header.Set("Content-Disposition", `attachment; filename="feeds.tsv"`)
 }
 
 func (c *FeedsController) ListAccountTsv(ctx *fasthttp.RequestCtx) {
-	feeds := c.FeedState.GetFeeds(nil, managers.All)
+	feeds := c.FeedState.GetFeedsNetworks()
 
 	result := make([][]string, 0)
 	result = append(result, []string{"campaign_id", "account_id", "created_at"})
 	for _, value := range feeds {
 		row := make([]string, 0)
 		row = append(row, strconv.Itoa(value.Id))
-		row = append(row, strconv.Itoa(value.AccountId))
+		row = append(row, strconv.Itoa(value.NetworkId))
 		row = append(row, value.CreatedAt)
 
 		result = append(result, row)
@@ -89,14 +92,14 @@ func (c *FeedsController) ListAccountTsv(ctx *fasthttp.RequestCtx) {
 }
 
 func (c *FeedsController) ListNetworkTsv(ctx *fasthttp.RequestCtx) {
-	feeds := c.FeedState.GetFeeds(nil, managers.All)
+	feeds := c.FeedState.GetFeedsNetworks()
 
 	result := make([][]string, 0)
 	result = append(result, []string{"campaign_id", "account_name"})
 	for _, value := range feeds {
 		row := make([]string, 0)
 		row = append(row, strconv.Itoa(value.Id))
-		row = append(row, value.AccountName)
+		row = append(row, value.NetworkName)
 
 		result = append(result, row)
 	}

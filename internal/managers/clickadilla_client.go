@@ -4,12 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/valyala/fasthttp"
+	"log"
 	"net/http"
 	"time"
 )
 
 type ClickadillaClientInterface interface {
 	GetFeeds() ([]Feed, error)
+	GetFeedsNetworks() ([]FeedsNetworks, error)
 	GetFeedsTargets() ([]FeedTargers, error)
 	GetFeedsSupplySidePlatforms() ([]FeedSupplySidePlatforms, error)
 	GetSupplySidePlatforms() ([]SupplySidePlatform, error)
@@ -132,6 +134,18 @@ func (c *ClickadillaClient) GetFeedsRtbCategories() ([]FeedRtbCategories, error)
 		return nil, err
 	}
 	return response.RtbCategories, err
+}
+
+func (c *ClickadillaClient) GetFeedsNetworks() ([]FeedsNetworks, error) {
+	response := make([]FeedsNetworks, 0)
+
+	err := c.makeRequest("GET", "api/billing/v1/feeds-networks", &response)
+
+	if err != nil {
+		log.Fatal(err.Error())
+		return nil, err
+	}
+	return response, err
 }
 
 func (c *ClickadillaClient) GetSupplySidePlatforms() ([]SupplySidePlatform, error) {
