@@ -93,6 +93,7 @@ type GeoSiteId struct {
 }
 
 type Browsers struct {
+	Accept         bool   `json:"accept"`
 	Browser        string `json:"browser"`
 	BrowserVersion int    `json:"browser_version"`
 }
