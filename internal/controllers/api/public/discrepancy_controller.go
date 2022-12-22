@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/clickadilla/cache-house/internal/managers"
+	"github.com/golang-module/carbon/v2"
 	"github.com/valyala/fasthttp"
 	"net/url"
 	"strconv"
-	"time"
 )
 
 type DiscrepancyController struct {
@@ -31,15 +31,10 @@ func (c *DiscrepancyController) Index(ctx *fasthttp.RequestCtx) {
 		feedType = managers.All
 	}
 
-	startDate, _ := time.Parse("2006-01-02", queryParams["start_date"][0])
-	endDate, _ := time.Parse("2006-01-02", queryParams["end_date"][0])
+	startDate := carbon.Parse(string(ctx.QueryArgs().Peek("start_date")))
+	endDate := carbon.Parse(string(ctx.QueryArgs().Peek("end_date")))
 
-	fmt.Println(startDate)
-	fmt.Println(endDate)
-
-	fmt.Println(billingTypes, feedType)
-
-	result := c.DiscrepancyState.GetDiscrepancies(startDate, endDate, billingTypes, feedType)
+	result := c.DiscrepancyState.GetDiscrepancies(startDate.Carbon2Time(), endDate.Carbon2Time(), billingTypes, feedType)
 
 	jsonResponse, err := json.Marshal(result)
 

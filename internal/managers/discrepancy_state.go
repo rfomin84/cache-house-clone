@@ -3,7 +3,6 @@ package managers
 import (
 	"github.com/golang-module/carbon/v2"
 	"github.com/sirupsen/logrus"
-	"log"
 	"sync"
 	"time"
 )
@@ -79,12 +78,8 @@ func (discrepancyState *DiscrepancyState) GetDiscrepancies(startDate, endDate ti
 
 	allFeeds := discrepancyState.FeedState.GetFeeds(billingTypes, isDsp)
 
-	log.Println("feeds ", len(allFeeds))
-
 	result := make([]DiscrepResponse, 0)
 	groupByDiscreps := discrepancyState.groupByDate()
-
-	log.Println("groupByDiscreps count", len(groupByDiscreps))
 
 	start := carbon.Time2Carbon(startDate)
 	end := carbon.Time2Carbon(endDate)
