@@ -46,7 +46,6 @@ type Feed struct {
 	KeywordsWhitelist    string               `json:"keywords_whitelist"`
 	TrackOnlyViewed      bool                 `json:"track_only_viewed"`
 	GoogleBotsFilter     bool                 `json:"google_bots_filter"`
-	Browsers             Browsers             `json:"browsers"`
 	LanguageFilter       LanguageFilter       `json:"language_filter"`
 	ClickDelay           *float64             `json:"click_delay"`
 }
@@ -57,7 +56,6 @@ type FeedTargers struct {
 	Formats        []string       `json:"formats"`
 	OsTypes        string         `json:"os_types"`
 	Sources        string         `json:"sources"`
-	Browsers       Browsers       `json:"browsers"`
 	LanguageFilter LanguageFilter `json:"language_filter"`
 }
 
@@ -98,8 +96,8 @@ type BrowserItem struct {
 }
 
 type Browsers struct {
-	BrowserWhitelist []BrowserItem `json:"browser_whitelist"`
-	BrowserBlacklist []BrowserItem `json:"browser_blacklist"`
+	BrowserWhitelist []BrowserItem `json:"browser_whitelist,-"`
+	BrowserBlacklist []BrowserItem `json:"browser_blacklist,-"`
 }
 
 type LanguageFilter struct {
