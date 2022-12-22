@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/valyala/fasthttp"
-	"log"
 	"net/http"
 	"time"
 )
@@ -142,7 +141,6 @@ func (c *ClickadillaClient) GetFeedsNetworks() ([]FeedsNetworks, error) {
 	err := c.makeRequest("GET", "api/billing/v1/feeds-networks", &response)
 
 	if err != nil {
-		log.Fatal(err.Error())
 		return nil, err
 	}
 	return response, err
