@@ -201,7 +201,7 @@ func (fs *FeedState) Update() {
 		newFeeds[i].Labels = newFeedsLabelsMap[feed.Id].Labels
 		newFeeds[i].LabelsIds = newFeedsLabelsMap[feed.Id].LabelsIds
 		newFeeds[i].RtbCategoryIds = newFeedsRtbCategoriesMap[feed.Id].RtbCategoryIds
-		//newFeeds[i].Browsers = newFeedsTargetsMap[feed.Id].Browsers
+		newFeeds[i].Browsers = newFeedsTargetsMap[feed.Id].Browsers
 		newFeeds[i].LanguageFilter = newFeedsTargetsMap[feed.Id].LanguageFilter
 	}
 
