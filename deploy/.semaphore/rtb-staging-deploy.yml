@@ -1,0 +1,26 @@
+version: v1.0
+name: Deploy to RTB-Staging
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+blocks:
+  - name: Deploy
+    task:
+      secrets:
+        - name: clickadilla-gcloud-service-account
+      jobs:
+        - name: kubectl
+          commands:
+            - sudo apt-get update && sudo apt install google-cloud-sdk-gke-gcloud-auth-plugin
+            - export CLUSTER=staging-cluster-ph1u
+            - export ENVIRONMENT=rtb-staging
+            - export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+            - export IMAGE_TAG="$SEMAPHORE_GIT_BRANCH-$SEMAPHORE_GIT_SHA-development"
+            - gcloud auth activate-service-account --key-file clickadilla-gcloud-service-account.json --project $PROJECT_ID
+            - gcloud config set project $PROJECT_ID
+            - gcloud config set compute/zone us-central1
+            - gcloud container clusters get-credentials $CLUSTER
+            - checkout
+            - 'sed -r "s|(image: gcr.io/$PROJECT_ID/$SEMAPHORE_PROJECT_NAME):.*|\1:$IMAGE_TAG|" -i deploy/$ENVIRONMENT/*.yaml'
+            - kubectl apply -f deploy/$ENVIRONMENT/

@@ -52,3 +52,5 @@ blocks:
 promotions:
   - name: Deploy to production
     pipeline_file: production-deploy.yml
+  - name: Deploy to rtb staging
+    pipeline_file: rtb-staging-deploy.yml
