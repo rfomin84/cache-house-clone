@@ -46,19 +46,23 @@ type Feed struct {
 	KeywordsWhitelist    string               `json:"keywords_whitelist"`
 	TrackOnlyViewed      bool                 `json:"track_only_viewed"`
 	GoogleBotsFilter     bool                 `json:"google_bots_filter"`
-	Browsers             *Browsers            `json:"browsers"`
-	LanguageFilter       LanguageFilter       `json:"language_filter"`
+	BrowsersWhitelist    []BrowserItem        `json:"browsers_whitelist"`
+	BrowsersBlacklist    []BrowserItem        `json:"browsers_blacklist"`
+	LanguageWhitelist    []string             `json:"language_whitelist"`
+	LanguageBlacklist    []string             `json:"language_blacklist"`
 	ClickDelay           *float64             `json:"click_delay"`
 }
 
 type FeedTargers struct {
-	Id             int            `json:"id"`
-	Geo            string         `json:"geo"`
-	Formats        []string       `json:"formats"`
-	OsTypes        string         `json:"os_types"`
-	Sources        string         `json:"sources"`
-	Browsers       *Browsers      `json:"browsers"`
-	LanguageFilter LanguageFilter `json:"language_filter"`
+	Id                int           `json:"id"`
+	Geo               string        `json:"geo"`
+	Formats           []string      `json:"formats"`
+	OsTypes           string        `json:"os_types"`
+	Sources           string        `json:"sources"`
+	BrowserWhitelist  []BrowserItem `json:"browser_whitelist"`
+	BrowserBlacklist  []BrowserItem `json:"browser_blacklist"`
+	LanguageWhitelist []string      `json:"language_whitelist"`
+	LanguageBlacklist []string      `json:"language_blacklist"`
 }
 
 type FeedSupplySidePlatforms struct {
@@ -95,16 +99,6 @@ type GeoSiteId struct {
 type BrowserItem struct {
 	Browser        string `json:"browser"`
 	BrowserVersion int    `json:"browser_version"`
-}
-
-type Browsers struct {
-	BrowserWhitelist []BrowserItem `json:"browser_whitelist"`
-	BrowserBlacklist []BrowserItem `json:"browser_blacklist"`
-}
-
-type LanguageFilter struct {
-	Accept    bool     `json:"accept"`
-	Languages []string `json:"languages"`
 }
 
 type FeedsNetworks struct {
