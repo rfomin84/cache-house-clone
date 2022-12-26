@@ -2,10 +2,9 @@ package public
 
 import (
 	"encoding/csv"
-	"encoding/json"
-	"fmt"
 	"github.com/clickadilla/cache-house/internal/managers"
-	"github.com/valyala/fasthttp"
+	"github.com/labstack/echo/v4"
+	"net/http"
 	"strconv"
 )
 
@@ -13,25 +12,16 @@ type NetworkController struct {
 	NetworkState *managers.NetworkState
 }
 
-func (c *NetworkController) Index(ctx *fasthttp.RequestCtx) {
+func (c *NetworkController) Index(ctx echo.Context) error {
 	networks := c.NetworkState.GetNetworks()
 	networkResponse := managers.NetworksResponse{
 		Networks: networks,
 	}
 
-	jsonResponse, err := json.Marshal(networkResponse)
-
-	if err != nil {
-		c.NetworkState.Logger.Error(err.Error())
-		ctx.Error("Error", fasthttp.StatusInternalServerError)
-		return
-	}
-
-	ctx.Response.Header.Set("Content-Type", "application/json")
-	_, _ = fmt.Fprintln(ctx, string(jsonResponse))
+	return ctx.JSON(http.StatusOK, networkResponse)
 }
 
-func (c *NetworkController) Tsv(ctx *fasthttp.RequestCtx) {
+func (c *NetworkController) Tsv(ctx echo.Context) error {
 	networks := c.NetworkState.GetNetworks()
 	networkResponse := managers.NetworksResponse{
 		Networks: networks,
@@ -47,10 +37,12 @@ func (c *NetworkController) Tsv(ctx *fasthttp.RequestCtx) {
 		result = append(result, row)
 	}
 
-	writer := csv.NewWriter(ctx.Response.BodyWriter())
+	ctx.Response().Header().Set(echo.HeaderContentType, "text/csv")
+	ctx.Response().Header().Set(echo.HeaderContentDisposition, `attachment; filename="feeds.tsv"`)
+
+	writer := csv.NewWriter(ctx.Response().Writer)
 	writer.Comma = '\t'
 	_ = writer.WriteAll(result)
 
-	ctx.Response.Header.Set("Content-Type", "text/csv")
-	ctx.Response.Header.Set("Content-Disposition", `attachment; filename="networks.tsv"`)
+	return nil
 }

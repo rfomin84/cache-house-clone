@@ -5,16 +5,15 @@ import (
 	"github.com/clickadilla/cache-house/internal/controllers/api/public"
 	"github.com/clickadilla/cache-house/internal/managers"
 	"github.com/clickadilla/cache-house/internal/middleware"
-	"github.com/fasthttp/router"
 	"github.com/joho/godotenv"
+	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
-	"github.com/valyala/fasthttp"
 	"log"
 	"os"
 )
 
 type App struct {
-	router            *router.Router
+	router            *echo.Echo
 	homeController    *controllers.HomeController
 	feedsController   *public.FeedsController
 	sspController     *public.SupplySidePlatformsController
@@ -27,7 +26,7 @@ func (a *App) Run() {
 	a.boot()
 	a.bootRouting()
 
-	log.Fatal(fasthttp.ListenAndServe(":"+os.Getenv("APP_PORT"), a.router.Handler))
+	log.Fatal(a.router.Start(":" + os.Getenv("APP_PORT")))
 }
 
 func (a *App) boot() {
@@ -54,7 +53,7 @@ func (a *App) boot() {
 	discrepancyState := managers.NewDiscrepancyState(clickadillaClient, a.logger, feedState)
 	go discrepancyState.RunUpdate()
 
-	a.router = router.New()
+	a.router = echo.New()
 	a.feedsController = &public.FeedsController{
 		FeedState: feedState,
 	}
@@ -76,17 +75,15 @@ func (a *App) boot() {
 
 func (a *App) bootRouting() {
 	a.router.GET("/", a.homeController.Index)
+	a.router.GET("/api/feeds", a.feedsController.Index, middleware.Auth)
+	a.router.GET("/api/feeds/tsv", a.feedsController.FeedListTsv, middleware.Auth)
+	a.router.GET("/api/feeds/list-account/tsv", a.feedsController.ListAccountTsv, middleware.Auth)
+	a.router.GET("/api/feeds/list-network/tsv", a.feedsController.ListNetworkTsv, middleware.Auth)
 
-	a.router.GET("/api/feeds", middleware.AuthMiddleware(a.feedsController.Index))
-	a.router.GET("/api/feeds/tsv", middleware.AuthMiddleware(a.feedsController.FeedListTsv))
-	a.router.GET("/api/feeds/list-account/tsv", middleware.AuthMiddleware(a.feedsController.ListAccountTsv))
-	a.router.GET("/api/feeds/list-network/tsv", middleware.AuthMiddleware(a.feedsController.ListNetworkTsv))
-	a.router.GET("/api/feeds/account-managers/tsv", middleware.AuthMiddleware(a.feedsController.FeedsAccountManagers))
+	a.router.GET("/api/supply-side-platforms", a.sspController.Index, middleware.Auth)
 
-	a.router.GET("/api/supply-side-platforms", middleware.AuthMiddleware(a.sspController.Index))
+	a.router.GET("/api/networks", a.networkController.Index, middleware.Auth)
+	a.router.GET("/api/networks/tsv", a.networkController.Tsv, middleware.Auth)
 
-	a.router.GET("/api/networks", middleware.AuthMiddleware(a.networkController.Index))
-	a.router.GET("/api/networks/tsv", middleware.AuthMiddleware(a.networkController.Tsv))
-
-	a.router.GET("/api/discrepancies", middleware.AuthMiddleware(a.discrepController.Index))
+	a.router.GET("/api/discrepancies", a.discrepController.Index, middleware.Auth)
 }

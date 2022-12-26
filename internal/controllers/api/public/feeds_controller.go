@@ -2,10 +2,10 @@ package public
 
 import (
 	"encoding/csv"
-	"encoding/json"
 	"fmt"
 	"github.com/clickadilla/cache-house/internal/managers"
-	"github.com/valyala/fasthttp"
+	"github.com/labstack/echo/v4"
+	"net/http"
 	"net/url"
 	"strconv"
 )
@@ -14,9 +14,9 @@ type FeedsController struct {
 	FeedState *managers.FeedState
 }
 
-func (c *FeedsController) Index(ctx *fasthttp.RequestCtx) {
+func (c *FeedsController) Index(ctx echo.Context) error {
 
-	queryParams, _ := url.ParseQuery(ctx.QueryArgs().String())
+	queryParams, _ := url.ParseQuery(ctx.Request().URL.String())
 
 	billingTypes := queryParams["billing_types"]
 
@@ -25,7 +25,7 @@ func (c *FeedsController) Index(ctx *fasthttp.RequestCtx) {
 		value, err := strconv.Atoi(queryParams["is_dsp"][0])
 		if err != nil {
 			c.FeedState.Logger.Error(err.Error())
-			ctx.Error("Error", fasthttp.StatusInternalServerError)
+			return ctx.String(http.StatusInternalServerError, "Error")
 		}
 		feedType = managers.FeedType(value)
 	} else {
@@ -36,19 +36,11 @@ func (c *FeedsController) Index(ctx *fasthttp.RequestCtx) {
 	feedResponse := managers.FeedsResponse{
 		Feeds: feeds,
 	}
-	jsonResponse, err := json.Marshal(feedResponse)
 
-	if err != nil {
-		c.FeedState.Logger.Error(err.Error())
-		ctx.Error("Error", fasthttp.StatusInternalServerError)
-		return
-	}
-
-	ctx.Response.Header.Set("Content-Type", "application/json")
-	_, _ = fmt.Fprintln(ctx, string(jsonResponse))
+	return ctx.JSON(http.StatusOK, feedResponse)
 }
 
-func (c *FeedsController) FeedListTsv(ctx *fasthttp.RequestCtx) {
+func (c *FeedsController) FeedListTsv(ctx echo.Context) error {
 	feeds := c.FeedState.GetFeedsNetworks()
 
 	result := make([][]string, 0)
@@ -61,15 +53,17 @@ func (c *FeedsController) FeedListTsv(ctx *fasthttp.RequestCtx) {
 		result = append(result, row)
 	}
 
-	writer := csv.NewWriter(ctx.Response.BodyWriter())
+	ctx.Response().Header().Set(echo.HeaderContentType, "text/csv")
+	ctx.Response().Header().Set(echo.HeaderContentDisposition, `attachment; filename="feeds.tsv"`)
+
+	writer := csv.NewWriter(ctx.Response().Writer)
 	writer.Comma = '\t'
 	_ = writer.WriteAll(result)
 
-	ctx.Response.Header.Set("Content-Type", "text/csv")
-	ctx.Response.Header.Set("Content-Disposition", `attachment; filename="feeds.tsv"`)
+	return nil
 }
 
-func (c *FeedsController) ListAccountTsv(ctx *fasthttp.RequestCtx) {
+func (c *FeedsController) ListAccountTsv(ctx echo.Context) error {
 	feeds := c.FeedState.GetFeedsNetworks()
 
 	result := make([][]string, 0)
@@ -83,15 +77,17 @@ func (c *FeedsController) ListAccountTsv(ctx *fasthttp.RequestCtx) {
 		result = append(result, row)
 	}
 
-	writer := csv.NewWriter(ctx.Response.BodyWriter())
+	ctx.Response().Header().Set(echo.HeaderContentType, "text/csv")
+	ctx.Response().Header().Set(echo.HeaderContentDisposition, `attachment; filename="feed_account.tsv"`)
+
+	writer := csv.NewWriter(ctx.Response().Writer)
 	writer.Comma = '\t'
 	_ = writer.WriteAll(result)
 
-	ctx.Response.Header.Set("Content-Type", "text/csv")
-	ctx.Response.Header.Set("Content-Disposition", `attachment; filename="feed_account.tsv"`)
+	return nil
 }
 
-func (c *FeedsController) ListNetworkTsv(ctx *fasthttp.RequestCtx) {
+func (c *FeedsController) ListNetworkTsv(ctx echo.Context) error {
 	feeds := c.FeedState.GetFeedsNetworks()
 
 	result := make([][]string, 0)
@@ -104,15 +100,17 @@ func (c *FeedsController) ListNetworkTsv(ctx *fasthttp.RequestCtx) {
 		result = append(result, row)
 	}
 
-	writer := csv.NewWriter(ctx.Response.BodyWriter())
+	ctx.Response().Header().Set(echo.HeaderContentType, "text/csv")
+	ctx.Response().Header().Set(echo.HeaderContentDisposition, `attachment; filename="feed_network.tsv"`)
+
+	writer := csv.NewWriter(ctx.Response().Writer)
 	writer.Comma = '\t'
 	_ = writer.WriteAll(result)
 
-	ctx.Response.Header.Set("Content-Type", "text/csv")
-	ctx.Response.Header.Set("Content-Disposition", `attachment; filename="feed_network.tsv"`)
+	return nil
 }
 
-func (c *FeedsController) FeedsAccountManagers(ctx *fasthttp.RequestCtx) {
+func (c *FeedsController) FeedsAccountManagers(ctx echo.Context) error {
 	feedsAccountManagers := c.FeedState.GetFeedsAccountManagers()
 
 	result := make([][]string, 0)
@@ -132,10 +130,12 @@ func (c *FeedsController) FeedsAccountManagers(ctx *fasthttp.RequestCtx) {
 		result = append(result, row)
 	}
 
-	writer := csv.NewWriter(ctx.Response.BodyWriter())
+	ctx.Response().Header().Set(echo.HeaderContentType, "text/csv")
+	ctx.Response().Header().Set(echo.HeaderContentDisposition, `attachment; filename="accounts_manager.tsv"`)
+
+	writer := csv.NewWriter(ctx.Response().Writer)
 	writer.Comma = '\t'
 	_ = writer.WriteAll(result)
 
-	ctx.Response.Header.Set("Content-Type", "text/csv")
-	ctx.Response.Header.Set("Content-Disposition", `attachment; filename="accounts_manager.tsv"`)
+	return nil
 }
