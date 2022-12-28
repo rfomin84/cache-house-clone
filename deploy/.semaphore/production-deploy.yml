@@ -12,6 +12,9 @@ blocks:
       jobs:
         - name: kubectl
           commands:
+            - sudo apt-get update && sudo apt install google-cloud-sdk-gke-gcloud-auth-plugin
+            - export CLUSTER=production-cluster-u75x
+            - export USE_GKE_GCLOUD_AUTH_PLUGIN=True
             - export IMAGE_TAG="$SEMAPHORE_GIT_BRANCH-$SEMAPHORE_GIT_SHA-development"
             - gcloud auth activate-service-account --key-file clickadilla-gcloud-service-account.json --project $PROJECT_ID
             - gcloud config set project $PROJECT_ID
