@@ -111,3 +111,31 @@ func (c *FeedsController) ListNetworkTsv(ctx *fasthttp.RequestCtx) {
 	ctx.Response.Header.Set("Content-Type", "text/csv")
 	ctx.Response.Header.Set("Content-Disposition", `attachment; filename="feed_network.tsv"`)
 }
+
+func (c *FeedsController) FeedsAccountManagers(ctx *fasthttp.RequestCtx) {
+	feedsAccountManagers := c.FeedState.GetFeedsAccountManagers()
+
+	result := make([][]string, 0)
+	result = append(result, []string{"account_id", "campaign_id", "responsible_manager_id", "responsible_manager_name"})
+	for _, value := range feedsAccountManagers {
+		row := make([]string, 0)
+		row = append(row, strconv.Itoa(value.AccountId))
+		row = append(row, strconv.Itoa(value.CampaignId))
+		managerId := ""
+		if value.ResponsibleManagerId > 0 {
+			managerId = strconv.Itoa(value.ResponsibleManagerId)
+		}
+
+		row = append(row, managerId)
+		row = append(row, value.ResponsibleManagerName)
+
+		result = append(result, row)
+	}
+
+	writer := csv.NewWriter(ctx.Response.BodyWriter())
+	writer.Comma = '\t'
+	_ = writer.WriteAll(result)
+
+	ctx.Response.Header.Set("Content-Type", "text/csv")
+	ctx.Response.Header.Set("Content-Disposition", `attachment; filename="accounts_manager.tsv"`)
+}

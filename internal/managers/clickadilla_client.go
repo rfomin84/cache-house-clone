@@ -11,6 +11,7 @@ import (
 type ClickadillaClientInterface interface {
 	GetFeeds() ([]Feed, error)
 	GetFeedsNetworks() ([]FeedsNetworks, error)
+	GetFeedsAccountManagers() ([]FeedsAccountManagers, error)
 	GetFeedsTargets() ([]FeedTargers, error)
 	GetFeedsSupplySidePlatforms() ([]FeedSupplySidePlatforms, error)
 	GetSupplySidePlatforms() ([]SupplySidePlatform, error)
@@ -139,6 +140,17 @@ func (c *ClickadillaClient) GetFeedsNetworks() ([]FeedsNetworks, error) {
 	response := make([]FeedsNetworks, 0)
 
 	err := c.makeRequest("GET", "api/billing/v1/feeds-networks", &response)
+
+	if err != nil {
+		return nil, err
+	}
+	return response, err
+}
+
+func (c *ClickadillaClient) GetFeedsAccountManagers() ([]FeedsAccountManagers, error) {
+	response := make([]FeedsAccountManagers, 0)
+
+	err := c.makeRequest("GET", "api/billing/v1/feeds-manager-accounts", &response)
 
 	if err != nil {
 		return nil, err

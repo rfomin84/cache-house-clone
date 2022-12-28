@@ -7,11 +7,12 @@ import (
 )
 
 type FeedState struct {
-	Feeds             []Feed
-	FeedsNetworks     []FeedsNetworks
-	Mutex             sync.RWMutex
-	ClickadillaClient ClickadillaClientInterface
-	Logger            *logrus.Logger
+	Feeds                []Feed
+	FeedsNetworks        []FeedsNetworks
+	FeedsAccountManagers []FeedsAccountManagers
+	Mutex                sync.RWMutex
+	ClickadillaClient    ClickadillaClientInterface
+	Logger               *logrus.Logger
 }
 
 type FeedType int
@@ -69,6 +70,12 @@ func (fs *FeedState) GetFeedsNetworks() []FeedsNetworks {
 	return fs.FeedsNetworks
 }
 
+func (fs *FeedState) GetFeedsAccountManagers() []FeedsAccountManagers {
+	fs.Mutex.RLock()
+	defer fs.Mutex.RUnlock()
+	return fs.FeedsAccountManagers
+}
+
 func (fs *FeedState) RunUpdate() {
 	for {
 		fs.Update()
@@ -95,6 +102,27 @@ func (fs *FeedState) UpdateFeedNetworks() {
 	fs.Mutex.Unlock()
 
 	fs.Logger.Info("FeedState: feeds-networks update finished")
+}
+
+func (fs *FeedState) RunUpdateFeedsAccountManagers() {
+	for {
+		fs.UpdateFeedsAccountManagers()
+		time.Sleep(time.Minute * 60)
+	}
+}
+
+func (fs *FeedState) UpdateFeedsAccountManagers() {
+	fs.Logger.Info("FeedState: feeds-account-managers update started")
+	newFeedsAccountManagers, err := fs.ClickadillaClient.GetFeedsAccountManagers()
+	if err != nil {
+		fs.Logger.Error(err.Error())
+		return
+	}
+	fs.Mutex.Lock()
+	fs.FeedsAccountManagers = newFeedsAccountManagers
+	fs.Mutex.Unlock()
+
+	fs.Logger.Info("FeedState: feeds-account-managers update finished")
 }
 
 func (fs *FeedState) Update() {

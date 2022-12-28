@@ -108,3 +108,10 @@ type FeedsNetworks struct {
 	NetworkId   int    `json:"network_id"`
 	NetworkName string `json:"network_name"`
 }
+
+type FeedsAccountManagers struct {
+	AccountId              int    `json:"account_id"`
+	CampaignId             int    `json:"campaign_id"`
+	ResponsibleManagerId   int    `json:"responsible_manager_id"`
+	ResponsibleManagerName string `json:"responsible_manager_name"`
+}

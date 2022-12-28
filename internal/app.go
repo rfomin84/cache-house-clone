@@ -43,6 +43,7 @@ func (a *App) boot() {
 	feedState := managers.NewFeedState(clickadillaClient, a.logger)
 	go feedState.RunUpdate()
 	go feedState.RunUpdateFeedsNetworks()
+	go feedState.RunUpdateFeedsAccountManagers()
 
 	sspState := managers.NewSupplySidePlatformState(clickadillaClient, a.logger)
 	go sspState.RunUpdate()
@@ -80,6 +81,7 @@ func (a *App) bootRouting() {
 	a.router.GET("/api/feeds/tsv", middleware.AuthMiddleware(a.feedsController.FeedListTsv))
 	a.router.GET("/api/feeds/list-account/tsv", middleware.AuthMiddleware(a.feedsController.ListAccountTsv))
 	a.router.GET("/api/feeds/list-network/tsv", middleware.AuthMiddleware(a.feedsController.ListNetworkTsv))
+	a.router.GET("/api/feeds/account-managers/tsv", middleware.AuthMiddleware(a.feedsController.FeedsAccountManagers))
 
 	a.router.GET("/api/supply-side-platforms", middleware.AuthMiddleware(a.sspController.Index))
 
