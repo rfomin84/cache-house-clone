@@ -50,6 +50,8 @@ type Feed struct {
 	BrowsersBlacklist    []BrowserItem        `json:"browsers_blacklist"`
 	LanguageWhitelist    []string             `json:"language_whitelist"`
 	LanguageBlacklist    []string             `json:"language_blacklist"`
+	DomainWhitelist      []string             `json:"domain_whitelist"`
+	DomainBlacklist      []string             `json:"domain_blacklist"`
 	ClickDelay           *float64             `json:"click_delay"`
 }
 
@@ -63,6 +65,8 @@ type FeedTargers struct {
 	BrowserBlacklist  []BrowserItem `json:"browser_blacklist"`
 	LanguageWhitelist []string      `json:"language_whitelist"`
 	LanguageBlacklist []string      `json:"language_blacklist"`
+	DomainWhitelist   []string      `json:"domain_whitelist"`
+	DomainBlacklist   []string      `json:"domain_blacklist"`
 }
 
 type FeedSupplySidePlatforms struct {

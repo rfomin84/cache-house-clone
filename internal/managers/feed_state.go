@@ -233,6 +233,8 @@ func (fs *FeedState) Update() {
 		newFeeds[i].BrowsersBlacklist = newFeedsTargetsMap[feed.Id].BrowserBlacklist
 		newFeeds[i].LanguageWhitelist = newFeedsTargetsMap[feed.Id].LanguageWhitelist
 		newFeeds[i].LanguageBlacklist = newFeedsTargetsMap[feed.Id].LanguageBlacklist
+		newFeeds[i].DomainWhitelist = newFeedsTargetsMap[feed.Id].DomainWhitelist
+		newFeeds[i].DomainBlacklist = newFeedsTargetsMap[feed.Id].DomainBlacklist
 	}
 
 	fs.Mutex.Lock()
