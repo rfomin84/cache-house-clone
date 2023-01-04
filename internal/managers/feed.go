@@ -50,8 +50,8 @@ type Feed struct {
 	BrowsersBlacklist    []BrowserItem        `json:"browsers_blacklist"`
 	LanguageWhitelist    []string             `json:"language_whitelist"`
 	LanguageBlacklist    []string             `json:"language_blacklist"`
-	DomainWhitelist      []string             `json:"domain_whitelist"`
-	DomainBlacklist      []string             `json:"domain_blacklist"`
+	DomainWhitelist      []string             `json:"domains_whitelist"`
+	DomainBlacklist      []string             `json:"domains_blacklist"`
 	ClickDelay           *float64             `json:"click_delay"`
 }
 
