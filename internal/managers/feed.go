@@ -1,5 +1,13 @@
 package managers
 
+type AllFeeds struct {
+	Id                 int      `json:"id"`
+	UserId             int      `json:"user_id"`
+	ExternalStatistics bool     `json:"external_statistics"`
+	IsDsp              int      `json:"is_demand_side_platform"`
+	Formats            []string `json:"placement_types"`
+}
+
 type Feed struct {
 	Id                   int                  `json:"id"`
 	Name                 string               `json:"name"`

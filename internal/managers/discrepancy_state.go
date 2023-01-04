@@ -76,7 +76,7 @@ func (discrepancyState *DiscrepancyState) GetDiscrepancies(startDate, endDate ti
 	discrepancyState.Mutex.RLock()
 	defer discrepancyState.Mutex.RUnlock()
 
-	allFeeds := discrepancyState.FeedState.GetFeeds(billingTypes, isDsp)
+	allFeeds := discrepancyState.FeedState.GetAllFeeds(billingTypes, isDsp)
 
 	result := make([]DiscrepResponse, 0)
 	groupByDiscreps := discrepancyState.groupByDate()

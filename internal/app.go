@@ -38,9 +38,10 @@ func (a *App) boot() {
 		a.logger.Fatal("Error loading .env file")
 	}
 
-	clickadillaClient := managers.NewClickadillaClient(os.Getenv("CLICKADILLA_API_ENDPOINT"))
+	clickadillaClient := managers.NewClickadillaClient(os.Getenv("CLICKADILLA_API_ENDPOINT"), os.Getenv("CLICKADILLA_API_TOKEN"))
 	feedState := managers.NewFeedState(clickadillaClient, a.logger)
 	go feedState.RunUpdate()
+	go feedState.RunUpdateAllFeeds()
 	go feedState.RunUpdateFeedsNetworks()
 	go feedState.RunUpdateFeedsAccountManagers()
 
@@ -79,6 +80,7 @@ func (a *App) bootRouting() {
 	a.router.GET("/api/feeds/tsv", a.feedsController.FeedListTsv, middleware.Auth)
 	a.router.GET("/api/feeds/list-account/tsv", a.feedsController.ListAccountTsv, middleware.Auth)
 	a.router.GET("/api/feeds/list-network/tsv", a.feedsController.ListNetworkTsv, middleware.Auth)
+	a.router.GET("/api/feeds/account-managers/tsv", a.feedsController.FeedsAccountManagers, middleware.Auth)
 
 	a.router.GET("/api/supply-side-platforms", a.sspController.Index, middleware.Auth)
 

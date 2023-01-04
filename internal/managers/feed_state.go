@@ -8,6 +8,7 @@ import (
 
 type FeedState struct {
 	Feeds                []Feed
+	AllFeeds             []AllFeeds
 	FeedsNetworks        []FeedsNetworks
 	FeedsAccountManagers []FeedsAccountManagers
 	Mutex                sync.RWMutex
@@ -64,6 +65,40 @@ func (fs *FeedState) GetFeeds(billingTypes []string, feedType FeedType) []Feed {
 	return feeds
 }
 
+func (fs *FeedState) GetAllFeeds(billingTypes []string, feedType FeedType) []AllFeeds {
+	fs.Mutex.RLock()
+	defer fs.Mutex.RUnlock()
+	feeds := make([]AllFeeds, 0, 500)
+
+	for _, feed := range fs.AllFeeds {
+		var currentFeedType FeedType
+		if feed.IsDsp == 1 {
+			currentFeedType = Dsp
+		} else {
+			currentFeedType = Reseller
+		}
+
+		if feedType != All && currentFeedType != feedType {
+			continue
+		}
+
+		if len(billingTypes) == 0 {
+			feeds = append(feeds, feed)
+			continue
+		}
+
+		for _, billingType := range billingTypes {
+			for _, feedBillingType := range feed.Formats {
+				if billingType == feedBillingType {
+					feeds = append(feeds, feed)
+				}
+			}
+		}
+	}
+
+	return feeds
+}
+
 func (fs *FeedState) GetFeedsNetworks() []FeedsNetworks {
 	fs.Mutex.RLock()
 	defer fs.Mutex.RUnlock()
@@ -79,6 +114,13 @@ func (fs *FeedState) GetFeedsAccountManagers() []FeedsAccountManagers {
 func (fs *FeedState) RunUpdate() {
 	for {
 		fs.Update()
+		time.Sleep(time.Minute * 2)
+	}
+}
+
+func (fs *FeedState) RunUpdateAllFeeds() {
+	for {
+		fs.UpdateAllFeeds()
 		time.Sleep(time.Minute * 2)
 	}
 }
@@ -241,4 +283,20 @@ func (fs *FeedState) Update() {
 	fs.Feeds = newFeeds
 	fs.Mutex.Unlock()
 	fs.Logger.Info("FeedState: feeds update finished")
+}
+
+func (fs *FeedState) UpdateAllFeeds() {
+	fs.Logger.Info("FeedState: all feeds update started")
+
+	newAllFeeds, err := fs.ClickadillaClient.GetAllFeeds()
+
+	if err != nil {
+		fs.Logger.Error(err.Error())
+		return
+	}
+
+	fs.Mutex.Lock()
+	fs.AllFeeds = newAllFeeds
+	fs.Mutex.Unlock()
+	fs.Logger.Info("FeedState: all feeds update finished")
 }
