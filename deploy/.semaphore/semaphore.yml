@@ -36,7 +36,7 @@ blocks:
             - docker pull $DEVELOPMENT_IMAGE
             - docker network create tc-advertising3_default
             - docker tag $DEVELOPMENT_IMAGE ${SEMAPHORE_PROJECT_NAME}:latest
-            - docker-compose run --rm cache-house go test -v ./internal/managers
+            - docker-compose run --rm cache-house go mod tidy && go test -v ./internal/managers
 
   - name: Check codestyle
     dependencies: ["Build development image"]

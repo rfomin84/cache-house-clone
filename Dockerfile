@@ -2,13 +2,15 @@ FROM golang:1.17-stretch
 
 WORKDIR /src
 
-COPY go.* ./
+# Cache dependencies
+ADD go.mod .
+ADD go.sum .
 
 RUN go mod download
 
-COPY . ./
+ADD . .
 
-RUN go mod vendor
+RUN go mod tidy
 
 RUN go build -v -o main cmd/main.go
 
