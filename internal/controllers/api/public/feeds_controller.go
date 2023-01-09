@@ -6,7 +6,6 @@ import (
 	"github.com/clickadilla/cache-house/internal/managers"
 	"github.com/labstack/echo/v4"
 	"net/http"
-	"net/url"
 	"strconv"
 )
 
@@ -16,7 +15,7 @@ type FeedsController struct {
 
 func (c *FeedsController) Index(ctx echo.Context) error {
 
-	queryParams, _ := url.ParseQuery(ctx.Request().URL.String())
+	queryParams := ctx.Request().URL.Query()
 
 	billingTypes := queryParams["billing_types"]
 
