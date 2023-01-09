@@ -40,16 +40,16 @@ func (a *App) boot() {
 
 	clickadillaClient := managers.NewClickadillaClient(os.Getenv("CLICKADILLA_API_ENDPOINT"), os.Getenv("CLICKADILLA_API_TOKEN"))
 	feedState := managers.NewFeedState(clickadillaClient, a.logger)
-	go feedState.RunUpdate()
+	//go feedState.RunUpdate()
 	go feedState.RunUpdateAllFeeds()
-	go feedState.RunUpdateFeedsNetworks()
-	go feedState.RunUpdateFeedsAccountManagers()
+	//go feedState.RunUpdateFeedsNetworks()
+	//go feedState.RunUpdateFeedsAccountManagers()
 
-	sspState := managers.NewSupplySidePlatformState(clickadillaClient, a.logger)
-	go sspState.RunUpdate()
-
-	networkState := managers.NewNetworkState(clickadillaClient, a.logger)
-	go networkState.RunUpdate()
+	//sspState := managers.NewSupplySidePlatformState(clickadillaClient, a.logger)
+	//go sspState.RunUpdate()
+	//
+	//networkState := managers.NewNetworkState(clickadillaClient, a.logger)
+	//go networkState.RunUpdate()
 
 	discrepancyState := managers.NewDiscrepancyState(clickadillaClient, a.logger, feedState)
 	go discrepancyState.RunUpdate()
@@ -58,20 +58,20 @@ func (a *App) boot() {
 	a.feedsController = &public.FeedsController{
 		FeedState: feedState,
 	}
-	a.sspController = &public.SupplySidePlatformsController{
-		SupplySidePlatformState: sspState,
-	}
-	a.networkController = &public.NetworkController{
-		NetworkState: networkState,
-	}
+	//a.sspController = &public.SupplySidePlatformsController{
+	//	SupplySidePlatformState: sspState,
+	//}
+	//a.networkController = &public.NetworkController{
+	//	NetworkState: networkState,
+	//}
 	a.discrepController = &public.DiscrepancyController{
 		DiscrepancyState: discrepancyState,
 	}
-	a.homeController = &controllers.HomeController{
-		FeedState:    feedState,
-		SspState:     sspState,
-		DiscrepState: discrepancyState,
-	}
+	//a.homeController = &controllers.HomeController{
+	//	FeedState:    feedState,
+	//	SspState:     sspState,
+	//	DiscrepState: discrepancyState,
+	//}
 }
 
 func (a *App) bootRouting() {
