@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+const UPDATE_PERIOD = 30
+
 type DiscrepResponse struct {
 	Date        string  `json:"date"`
 	FeedId      int     `json:"feed_id"`
@@ -22,6 +24,7 @@ type DiscrepancyState struct {
 	ClickadillaClient ClickadillaClientInterface
 	FeedState         *FeedState
 	Logger            *logrus.Logger
+	Duration          time.Duration
 }
 
 func NewDiscrepancyState(clientClient ClickadillaClientInterface, logger *logrus.Logger, feedState *FeedState) *DiscrepancyState {
@@ -29,13 +32,14 @@ func NewDiscrepancyState(clientClient ClickadillaClientInterface, logger *logrus
 		ClickadillaClient: clientClient,
 		Logger:            logger,
 		FeedState:         feedState,
+		Duration:          time.Minute * UPDATE_PERIOD,
 	}
 }
 
 func (discrepancyState *DiscrepancyState) RunUpdate() {
 	for {
 		discrepancyState.Update()
-		time.Sleep(time.Minute * 30)
+		time.Sleep(discrepancyState.Duration)
 	}
 }
 
@@ -45,7 +49,9 @@ func (discrepancyState *DiscrepancyState) Update() {
 	startDate := carbon.Now().SubMonths(6)
 
 	result := make([]Discrepancies, 0)
+
 	wg := sync.WaitGroup{}
+	errorGetStats := false
 
 	for i := 0; i < 6; i++ {
 		wg.Add(1)
@@ -59,6 +65,7 @@ func (discrepancyState *DiscrepancyState) Update() {
 			discrep, err := discrepancyState.ClickadillaClient.GetDiscrepancies(start, end)
 			if err != nil {
 				discrepancyState.Logger.Error(err.Error())
+				errorGetStats = true
 				return
 			}
 			result = append(result, discrep...)
@@ -66,9 +73,16 @@ func (discrepancyState *DiscrepancyState) Update() {
 	}
 
 	wg.Wait()
-	discrepancyState.Mutex.Lock()
-	discrepancyState.Discrepancies = result
-	discrepancyState.Mutex.Unlock()
+
+	if !errorGetStats {
+		discrepancyState.Mutex.Lock()
+		discrepancyState.Discrepancies = result
+		discrepancyState.Duration = time.Minute * UPDATE_PERIOD
+		discrepancyState.Mutex.Unlock()
+	} else {
+		discrepancyState.Duration = time.Minute * 1
+	}
+
 	discrepancyState.Logger.Info("DiscrepancyState: Discrepancies update finished")
 }
 
