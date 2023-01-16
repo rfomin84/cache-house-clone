@@ -1,6 +1,11 @@
 package internal
 
 import (
+	"context"
+	"log"
+	"os"
+	"time"
+
 	"github.com/clickadilla/cache-house/internal/controllers"
 	"github.com/clickadilla/cache-house/internal/controllers/api/public"
 	"github.com/clickadilla/cache-house/internal/managers"
@@ -8,8 +13,6 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
-	"log"
-	"os"
 )
 
 type App struct {
@@ -23,6 +26,7 @@ type App struct {
 }
 
 func (a *App) Run() {
+
 	a.boot()
 	a.bootRouting()
 
@@ -30,6 +34,8 @@ func (a *App) Run() {
 }
 
 func (a *App) boot() {
+	ctx := context.Background()
+
 	a.logger = logrus.New()
 	a.logger.SetOutput(os.Stdout)
 
@@ -49,7 +55,8 @@ func (a *App) boot() {
 	go sspState.RunUpdate()
 
 	networkState := managers.NewNetworkState(clickadillaClient, a.logger)
-	go networkState.RunUpdate()
+	networkStateUpdater := managers.NewUpdater(networkState, time.Minute*2)
+	networkStateUpdater.StartPeriodicUpdate(ctx)
 
 	discrepancyState := managers.NewDiscrepancyState(clickadillaClient, a.logger, feedState)
 	go discrepancyState.RunUpdate()

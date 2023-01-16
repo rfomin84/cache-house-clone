@@ -1,10 +1,13 @@
 package managers
 
 import (
-	"github.com/golang-module/carbon/v2"
-	"github.com/sirupsen/logrus"
+	"context"
 	"sync"
 	"time"
+
+	"github.com/golang-module/carbon/v2"
+	"github.com/sirupsen/logrus"
+	"golang.org/x/sync/errgroup"
 )
 
 const UPDATE_PERIOD = 30
@@ -43,42 +46,43 @@ func (discrepancyState *DiscrepancyState) RunUpdate() {
 	}
 }
 
-func (discrepancyState *DiscrepancyState) Update() {
+func (discrepancyState *DiscrepancyState) Update(ctx context.Context) { // context need
 	discrepancyState.Logger.Info("DiscrepancyState: Discrepancies update started")
 
-	startDate := carbon.Now().SubMonths(6)
+	const SIX_MONTHS = 6
+	startDate := carbon.Now().SubMonths(SIX_MONTHS)
 
+	mutex := sync.Mutex{}
 	result := make([]Discrepancies, 0)
 
-	wg := sync.WaitGroup{}
-	errorGetStats := false
+	g, _ := errgroup.WithContext(ctx)
+	for i := 0; i < SIX_MONTHS; i++ {
+		i = i
+		g.Go(func() error {
+			start := startDate.AddMonths(i)
+			end := start.AddMonths(1)
 
-	for i := 0; i < 6; i++ {
-		wg.Add(1)
-		start := startDate.AddMonths(i)
-		end := start.AddMonths(1)
-
-		go func(start, end time.Time) {
-			defer func() {
-				wg.Done()
-			}()
-			discrep, err := discrepancyState.ClickadillaClient.GetDiscrepancies(start, end)
+			discrep, err := discrepancyState.ClickadillaClient.GetDiscrepancies(start.Carbon2Time(), end.Carbon2Time())
 			if err != nil {
 				discrepancyState.Logger.Error(err.Error())
-				errorGetStats = true
-				return
+				return err
 			}
+
+			mutex.Lock()
 			result = append(result, discrep...)
-		}(start.Carbon2Time(), end.Carbon2Time())
+			mutex.Unlock()
+
+			return nil
+		})
 	}
 
-	wg.Wait()
-
-	if !errorGetStats {
+	// backoff
+	if err := g.Wait(); err == nil {
 		discrepancyState.Mutex.Lock()
 		discrepancyState.Discrepancies = result
-		discrepancyState.Duration = time.Minute * UPDATE_PERIOD
 		discrepancyState.Mutex.Unlock()
+
+		discrepancyState.Duration = time.Minute * UPDATE_PERIOD
 	} else {
 		discrepancyState.Duration = time.Minute * 1
 	}
@@ -87,9 +91,6 @@ func (discrepancyState *DiscrepancyState) Update() {
 }
 
 func (discrepancyState *DiscrepancyState) GetDiscrepancies(startDate, endDate time.Time, billingTypes []string, isDsp FeedType) []DiscrepResponse {
-	discrepancyState.Mutex.RLock()
-	defer discrepancyState.Mutex.RUnlock()
-
 	allFeeds := discrepancyState.FeedState.GetAllFeeds(billingTypes, isDsp)
 
 	result := make([]DiscrepResponse, 0)
@@ -116,13 +117,15 @@ func (discrepancyState *DiscrepancyState) GetDiscrepancies(startDate, endDate ti
 			})
 		}
 	}
+
 	return result
 }
 
 func (discrepancyState *DiscrepancyState) groupByDate() map[string]map[int]Discrepancies {
+	discrepancyState.Mutex.RLock()
+	defer discrepancyState.Mutex.RUnlock()
 
 	result := make(map[string]map[int]Discrepancies, 0)
-
 	for _, discrep := range discrepancyState.Discrepancies {
 		date := carbon.Time2Carbon(discrep.Date).ToDateString()
 		mm, ok := result[date]

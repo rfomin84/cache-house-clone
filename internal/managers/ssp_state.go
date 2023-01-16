@@ -1,9 +1,10 @@
 package managers
 
 import (
-	"github.com/sirupsen/logrus"
 	"sync"
 	"time"
+
+	"github.com/sirupsen/logrus"
 )
 
 type SupplySidePlatformState struct {
@@ -24,7 +25,7 @@ func NewSupplySidePlatformState(clickadillaClient ClickadillaClientInterface, lo
 func (sspState *SupplySidePlatformState) RunUpdate() {
 	for {
 		sspState.Update()
-		time.Sleep(time.Minute * 2)
+		time.Sleep(time.Minute * 2) // config
 	}
 }
 

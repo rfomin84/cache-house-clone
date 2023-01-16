@@ -1,9 +1,10 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/clickadilla/cache-house/internal/managers"
 	"github.com/labstack/echo/v4"
-	"net/http"
 )
 
 type HomeController struct {
@@ -13,7 +14,6 @@ type HomeController struct {
 }
 
 func (c *HomeController) Index(ctx echo.Context) error {
-
 	countFeeds := len(c.FeedState.Feeds)
 	countSsp := len(c.SspState.SupplySidePlatforms)
 	countDiscrep := len(c.DiscrepState.Discrepancies)

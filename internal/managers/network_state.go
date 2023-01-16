@@ -1,9 +1,9 @@
 package managers
 
 import (
-	"github.com/sirupsen/logrus"
 	"sync"
-	"time"
+
+	"github.com/sirupsen/logrus"
 )
 
 type NetworkState struct {
@@ -17,13 +17,6 @@ func NewNetworkState(clientClient ClickadillaClientInterface, logger *logrus.Log
 	return &NetworkState{
 		ClickadillaClient: clientClient,
 		Logger:            logger,
-	}
-}
-
-func (networkState *NetworkState) RunUpdate() {
-	for {
-		networkState.Update()
-		time.Sleep(time.Minute * 2)
 	}
 }
 

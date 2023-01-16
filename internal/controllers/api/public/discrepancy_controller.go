@@ -1,23 +1,24 @@
 package public
 
 import (
-	"github.com/clickadilla/cache-house/internal/managers"
-	"github.com/go-playground/validator/v10"
-	"github.com/golang-module/carbon/v2"
-	"github.com/labstack/echo/v4"
 	"net/http"
 	"net/url"
 	"strconv"
 	"time"
+
+	"github.com/clickadilla/cache-house/internal/managers"
+	"github.com/go-playground/validator/v10"
+	"github.com/labstack/echo/v4"
 )
 
 type DiscrepancyController struct {
 	DiscrepancyState *managers.DiscrepancyState
 }
 
+// divide to small functions
 func (c *DiscrepancyController) Index(ctx echo.Context) error {
 	validate := validator.New()
-	validate.RegisterValidation("date", ValidateDate)
+	_ = validate.RegisterValidation("date", ValidateDate)
 	validate.RegisterValidation("start_date", ValidateStartDate)
 
 	queryParams, _ := url.ParseQuery(ctx.Request().URL.String())
@@ -33,14 +34,14 @@ func (c *DiscrepancyController) Index(ctx echo.Context) error {
 		StartDate: ctx.QueryParam("start_date"),
 		EndDate:   ctx.QueryParam("end_date"),
 	}
-	err := validate.Struct(r)
-	if err != nil {
+
+	if err := validate.Struct(r); err != nil {
 		type errMsg struct {
 			Mgs string `json:"mgs"`
 		}
+
 		errSlice := make([]errMsg, 0)
 		for _, err := range err.(validator.ValidationErrors) {
-
 			msgText := err.Field() + " should be " + err.Tag()
 			if err.Tag() == "start_date" {
 				deadline := carbon.Now().SubMonths(6)

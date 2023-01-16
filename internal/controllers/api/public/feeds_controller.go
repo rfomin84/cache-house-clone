@@ -3,10 +3,11 @@ package public
 import (
 	"encoding/csv"
 	"fmt"
-	"github.com/clickadilla/cache-house/internal/managers"
-	"github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
+
+	"github.com/clickadilla/cache-house/internal/managers"
+	"github.com/labstack/echo/v4"
 )
 
 type FeedsController struct {
@@ -14,9 +15,7 @@ type FeedsController struct {
 }
 
 func (c *FeedsController) Index(ctx echo.Context) error {
-
 	queryParams := ctx.Request().URL.Query()
-
 	billingTypes := queryParams["billing_types"]
 
 	var feedType managers.FeedType
